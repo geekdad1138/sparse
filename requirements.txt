@@ -1,0 +1,2 @@
+# Project dependencies
+# Add libraries like nltk, spacy, textblob as needed
