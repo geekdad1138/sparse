@@ -6,6 +6,35 @@ This document outlines the implementation plan for adding parsing library engine
 
 ## Priority & Phases
 
+### Installation: Extras Groups
+
+`sparse` uses Python's optional dependency system. Users install only what they need:
+
+```bash
+# Minimal install (no engines)
+pip install sparse
+
+# Core engines (recommended)
+pip install sparse[core]              # NLTK, spaCy, TextBlob
+
+# Advanced engines
+pip install sparse[advanced]          # Transformers, Gensim, Stanza
+
+# Specialized engines
+pip install sparse[specialized]       # Tokenizers, SentencePiece, Flair
+
+# Utilities
+pip install sparse[utils]             # Text helpers, cleaning, detection
+
+# Development
+pip install sparse[dev]               # Testing, linting, formatting
+
+# Everything
+pip install sparse[all]               # All engines and utilities
+```
+
+See `pyproject.toml` for full dependency list per group.
+
 ### Phase 1: Core (In Progress)
 - [x] NLTK — basic tokenization, lemmatization, stop words
 - [x] spaCy — industrial NLP with pipelines
@@ -30,7 +59,54 @@ This document outlines the implementation plan for adding parsing library engine
 
 ---
 
-## Phase 1: Core Engines
+## Dependency Management: Extras Groups
+
+**Why extras groups?**
+
+- **Minimal core install**: Users who only need basic text cleaning don't download 500MB of ML models
+- **User control**: Each user installs exactly what they need
+- **No conflicts**: Separate dependency groups prevent version conflicts
+- **Industry standard**: Used by Hugging Face, PyTorch, scikit-learn, etc.
+
+**Current extras structure** (in `pyproject.toml`):
+
+| Group | Purpose | Engines | Size |
+|-------|---------|---------|------|
+| `[core]` | Recommended set | NLTK, spaCy, TextBlob | ~500 MB |
+| `[advanced]` | Heavy, powerful | Transformers, Gensim, Stanza | ~2-3 GB |
+| `[specialized]` | Niche use cases | Tokenizers, SentencePiece, Flair | ~1 GB |
+| `[utils]` | Helper libraries | Text cleaning, detection, HTML parsing | ~100 MB |
+| `[dev]` | Testing & CI | pytest, black, flake8, mypy | ~50 MB |
+| `[all]` | Everything | All of the above | ~3.5 GB |
+
+**Installation examples:**
+
+```bash
+# User 1: Only needs spaCy
+pip install sparse[core]
+
+# User 2: Only wants NLTK (minimal footprint)
+pip install sparse
+pip install nltk
+
+# User 3: Doing NLP research (everything)
+pip install sparse[all]
+
+# User 4: Working in CI/CD pipeline
+pip install sparse[core,dev]
+```
+
+**Error handling:** If user tries to use an engine they haven't installed:
+
+```python
+>>> parse("text", engine="gensim")
+ValueError: Gensim engine not available. 
+Install with: pip install sparse[advanced]
+```
+
+Clear, actionable error message.
+
+---
 
 ### 1. NLTK Engine ✅ **COMPLETE**
 
@@ -429,10 +505,11 @@ tagged = parse("Hello world", engine="spacy", pos_tag=True, tokenize=True)
 - [ ] Add error handling (missing dependencies, bad input)
 - [ ] Update `sparse/__init__.py` dispatcher to include new engine
 - [ ] Create `tests/test_engines_<engine>.py` with test suite
-- [ ] Add dependency to `requirements.txt`
+- [ ] **Add dependency to appropriate extras group in `pyproject.toml`** (not requirements.txt)
 - [ ] Document in `README.md` (usage examples)
 - [ ] Update `docs/Add-<Engine>.md` spec if needed
 - [ ] Run full test suite (`pytest -v`)
+- [ ] Verify error message if engine dependencies are missing
 
 ### Repository Updates (Once Per Milestone):
 

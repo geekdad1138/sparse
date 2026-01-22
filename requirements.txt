@@ -1,4 +1,10 @@
-# Project dependencies
+# Development requirements
+# For production, use: pip install sparse[core] or other extras groups
+# See pyproject.toml for all available extras
+
+# Core engines (recommended)
 nltk>=3.8
 spacy>=3.0
+
+# Testing
 pytest>=7.0
