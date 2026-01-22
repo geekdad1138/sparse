@@ -62,28 +62,44 @@ class TestSparse(unittest.TestCase):
 
 
 class TestNLTKEngine(unittest.TestCase):
-    """Test suite for NLTK engine (stub for future implementation)."""
+    """Test suite for NLTK engine."""
     
     def test_nltk_tokenize(self):
-        """Test NLTK tokenization (when implemented)."""
-        # TODO: Implement when NLTK engine is built
-        # result = parse("Hello world", engine="nltk", tokenize=True)
-        # self.assertIsInstance(result, list)
-        pass
+        """Test NLTK tokenization."""
+        result = parse("Hello world", engine="nltk", tokenize=True)
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 2)
+        self.assertIn("Hello", result)
+        self.assertIn("world", result)
     
     def test_nltk_remove_stopwords(self):
-        """Test NLTK stop word removal (when implemented)."""
-        # TODO: Implement when NLTK engine is built
-        # result = parse("The quick brown fox", engine="nltk", remove_stopwords=True)
-        # self.assertNotIn("the", result.lower())
-        pass
+        """Test NLTK stop word removal."""
+        result = parse("The quick brown fox", engine="nltk", remove_stopwords=True, tokenize=True)
+        self.assertIsInstance(result, list)
+        # "the" should be removed (stop word)
+        self.assertNotIn("The", result)
+        self.assertNotIn("the", result)
+        # Content words should remain
+        self.assertIn("quick", result)
     
     def test_nltk_lemmatize(self):
-        """Test NLTK lemmatization (when implemented)."""
-        # TODO: Implement when NLTK engine is built
-        # result = parse("running", engine="nltk", lemmatize=True, tokenize=True)
-        # self.assertIn("run", result)
-        pass
+        """Test NLTK lemmatization."""
+        result = parse("cats dogs running", engine="nltk", lemmatize=True, tokenize=True)
+        self.assertIsInstance(result, list)
+        # "cats" should lemmatize to "cat", "dogs" to "dog"
+        self.assertIn("cat", result)
+        self.assertIn("dog", result)
+    
+    def test_nltk_combined_options(self):
+        """Test NLTK with multiple options."""
+        result = parse("THE QUICK BROWN FOX", engine="nltk", lowercase=True, 
+                      remove_stopwords=True, tokenize=True)
+        self.assertIsInstance(result, list)
+        # "the" is a stop word, should be removed
+        self.assertNotIn("the", result)
+        # Other words should be lowercase
+        self.assertIn("quick", result)
+        self.assertIn("brown", result)
 
 
 if __name__ == '__main__':
