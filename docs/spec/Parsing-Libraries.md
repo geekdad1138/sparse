@@ -1,0 +1,13 @@
+- **NLTK**: Classic toolkit for tokenization, stemming, POS, corpora and teaching — `pip install nltk`.  
+- **spaCy**: Fast industrial NLP (tokenization, lemmatization, pipelines, NER) — `pip install spacy`.  
+- **Hugging Face Transformers**: Pretrained Transformer models + tokenization/feature helpers — `pip install transformers`.  
+- **tokenizers (Hugging Face)**: Very fast Rust-based subword tokenizers (BPE/WordPiece) — `pip install tokenizers`.  
+- **SentencePiece**: Subword tokenization (Unigram/BPE), model training for tokenizers — `pip install sentencepiece`.  
+- **Gensim**: Topic modeling and classical embeddings (word2vec, doc2vec) — `pip install gensim`.  
+- **TextBlob**: Simple, user-friendly API for sentiment, tokenization, noun phrases — `pip install textblob`.  
+- **Stanza / Flair**: Neural, multilingual pipelines and embeddings (Stanza = Stanford; Flair = contextual embeddings) — `pip install stanza flair`.  
+- **scikit-learn**: Feature extraction (CountVectorizer, TF-IDF), classic ML utilities — `pip install scikit-learn`.  
+- **BeautifulSoup / lxml / bleach**: HTML parsing and sanitization for cleaning web text — `pip install beautifulsoup4 lxml bleach`.  
+- **ftfy / Unidecode / regex / emoji**: Text normalization helpers — `pip install ftfy Unidecode regex emoji`.  
+- **langdetect / fasttext**: Language detection (lightweight `langdetect`, high-accuracy `fasttext`) — `pip install langdetect fasttext`.  
+- **textacy**: Higher-level text processing utilities built on spaCy for cleaning/transformations — `pip install textacy`.

@@ -13,7 +13,7 @@ def parse(text, engine=None, lowercase=False, remove_punctuation=False,
         remove_stopwords (bool): Remove stop words (engine-dependent).
         lemmatize (bool): Apply lemmatization (engine-dependent).
         tokenize (bool): Return tokens instead of joined string (engine-dependent).
-        **kwargs: Additional engine-specific options.
+        **kwargs: Additional engine-specific options (e.g., pos_tag, ner, model for spacy).
     
     Returns:
         str or list: Processed text or tokens.
@@ -65,5 +65,11 @@ def _dispatch_engine(engine_name, text, options):
             return nltk_engine.parse(text, **engine_options)
         except ImportError:
             raise ValueError('NLTK engine not available. Install nltk: pip install nltk')
+    elif engine_name == 'spacy':
+        try:
+            from sparse.engines import spacy_engine
+            return spacy_engine.parse(text, **engine_options)
+        except ImportError:
+            raise ValueError('spaCy engine not available. Install spacy: pip install spacy')
     else:
         raise ValueError(f'Unknown engine: {engine_name}')

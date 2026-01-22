@@ -1,2 +1,4 @@
 # Project dependencies
-# Add libraries like nltk, spacy, textblob as needed
+nltk>=3.8
+spacy>=3.0
+pytest>=7.0
