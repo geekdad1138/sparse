@@ -71,5 +71,11 @@ def _dispatch_engine(engine_name, text, options):
             return spacy_engine.parse(text, **engine_options)
         except ImportError:
             raise ValueError('spaCy engine not available. Install spacy: pip install spacy')
+    elif engine_name == 'textblob':
+        try:
+            from sparse.engines import textblob_engine
+            return textblob_engine.parse(text, **engine_options)
+        except ImportError:
+            raise ValueError('TextBlob engine not available. Install textblob: pip install textblob')
     else:
         raise ValueError(f'Unknown engine: {engine_name}')

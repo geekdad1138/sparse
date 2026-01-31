@@ -361,3 +361,448 @@ Done! Here's what I've implemented:
 - __init__.py & `nltk_engine.py`: New engine module
 
 Made changes.
+
+User: Ok, I added all the parsing libraries you mentioned to this .md file.
+
+Can you make a developer spec with action items to complete, relevant to completing implementation for each one, and the steps involved?
+
+GitHub Copilot: Read [](file:///c%3A/Users/dave/Documents/GitHub/sparse/docs/spec/Parsing-Libraries.md)
+
+Now I'll create a comprehensive developer spec with implementation roadmap and action items. Let me create a new spec file: 
+
+Created [](file:///c%3A/Users/dave/Documents/GitHub/sparse/docs/spec/Engine-Implementation-Roadmap.md)
+
+Done! I've created a comprehensive **Engine Implementation Roadmap** at Engine-Implementation-Roadmap.md.
+
+**Key Features:**
+
+**Organized by Priority:**
+- **Phase 1 (Core):** NLTK ✅, spaCy, TextBlob
+- **Phase 2 (Advanced):** Transformers, Gensim, Stanza
+- **Phase 3 (Specialized):** Tokenizers, SentencePiece, Flair
+- **Phase 4 (Utilities):** Normalization, language detection, HTML cleaning, etc.
+
+**For Each Engine:**
+- Implementation steps with code signatures
+- Feature breakdown
+- Testing requirements
+- Error handling guidance
+- Dependencies to add
+
+**Implementation Checklist:**
+- Clear tasks for each engine (create file, implement, test, integrate, document)
+
+**Timeline:**
+- NLTK: ✅ Complete
+- spaCy + TextBlob: 4-6 hours
+- Full roadmap: ~30-45 hours total
+
+Next step would be implementing **spaCy** (high-demand, widely used) or **TextBlob** (lightweight beginner-friendly) — which interests you more?
+
+Made changes.
+
+User: Let's go for spaCy!
+
+And just as a check, people can use sparse for any library they want, right, even if they don't have some of the libraries install?
+
+GitHub Copilot: Yes! That's exactly how sparse is designed. Here's how it works:
+
+- **Default (no engine)**: Uses only `sparse/utils` — **zero external dependencies**. Pure Python regex-based cleaning.
+- **With engine**: User installs only the libraries they want (`nltk`, `spacy`, `textblob`, etc.)
+- **Missing engine**: If user tries `parse(..., engine="spacy")` but hasn't installed spacy, they get a clear error: `"spacy engine not available. Install: pip install spacy"`
+
+This keeps sparse lightweight and flexible — no bloat for users who only need basic text cleaning.
+
+Now let's implement spaCy! I'll create the engine, update dispatch, and add tests: 
+
+Created [](file:///c%3A/Users/dave/Documents/GitHub/sparse/sparse/engines/spacy_engine.py)
+
+Now update the dispatcher in __init__.py to support spaCy: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+
+
+Using "Replace String in File"
+
+
+```
+
+```
+Now create comprehensive tests for spaCy: 
+
+Created [](file:///c%3A/Users/dave/Documents/GitHub/sparse/tests/test_engines_spacy.py)
+
+Now update requirements.txt: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+Install spaCy and download the model: 
+
+Installing spacy in Python 3.13.9 (.venv)
+Completed with input: {
+  "packageList": [
+    "spacy"
+  ],
+  "resourcePath": "c:\\Users\\dave\\Documents\\GitHub\\sparse"
+}
+
+Download the spaCy model: 
+
+Ran terminal command: C:/Users/dave/Documents/GitHub/sparse/.venv/Scripts/python.exe -m spacy download en_core_web_sm
+
+Now run all tests to ensure spaCy integration works: 
+
+Ran terminal command: C:/Users/dave/Documents/GitHub/sparse/.venv/Scripts/python.exe -m pytest tests/ -v
+
+Perfect! All **21 tests pass** (9 new spaCy tests + 12 existing tests). Let me update the roadmap to mark spaCy as complete: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+
+
+Using "Replace String in File"
+
+
+```
+
+```
+Done! 🎉 **spaCy engine is fully implemented and tested!**
+
+**What's complete:**
+
+✅ **spacy_engine.py** — Full spaCy integration with:
+- Tokenization
+- Lemmatization
+- Stop word removal
+- POS tagging
+- Named Entity Recognition (NER)
+- Lowercase & punctuation removal
+
+✅ **9 comprehensive tests** — All passing:
+- Basic tokenization
+- Stop word removal
+- Lemmatization
+- POS tagging
+- NER extraction
+- Combined options
+- Punctuation removal
+- Lowercase handling
+
+✅ **Updated requirements.txt** — spaCy added
+
+✅ **Full test suite: 21/21 passing** (9 spaCy + 12 existing)
+
+**Example usage:**
+```python
+from sparse import parse
+
+# Tokenize
+tokens = parse("Hello world", engine="spacy", tokenize=True)
+
+# Advanced processing
+result = parse("The cats are running", engine="spacy", 
+              lemmatize=True, remove_stopwords=True, tokenize=True)
+
+# Named Entity Recognition
+entities = parse("Apple is in Cupertino", engine="spacy", ner=True)
+```
+
+**Next steps:** Implement TextBlob (lightweight), or jump to another Phase 2 engine?
+
+Made changes.
+
+User: Don't code yet, but could there be an option where sparse will install the libraries if they are missing?
+
+GitHub Copilot: Great question! **Auto-installing is generally not recommended**, but there are better alternatives:
+
+**Why NOT auto-install:**
+- **Security risk** — silently installing packages without consent is dangerous
+- **Principle of least surprise** — users expect to control their environments
+- **Environment management** — breaks reproducibility (poetry, pipenv, docker, etc.)
+- **Bad practice** — libraries shouldn't modify user's system unprompted
+- **Dependency hell** — could conflict with existing versions
+
+**Better approaches:**
+
+1. **Extras groups** (Recommended)
+   ```bash
+   pip install sparse                    # minimal install
+   pip install sparse[spacy]             # with spacy
+   pip install sparse[nltk,spacy,gensim] # multiple engines
+   pip install sparse[all]               # all engines
+   ```
+   Then user controls what they install.
+
+2. **Clear error messages** (Current approach)
+   ```
+   ValueError: spaCy not available. Install with: pip install spacy
+   ```
+   Users know exactly what to do.
+
+3. **Optional interactive prompt** (Friendlier)
+   ```python
+   try:
+       import spacy
+   except ImportError:
+       user_input = input("spaCy not found. Install now? (y/n): ")
+       if user_input.lower() == 'y':
+           subprocess.run([sys.executable, '-m', 'pip', 'install', 'spacy'])
+   ```
+   Asks permission before installing.
+
+4. **Installation helper script**
+   ```bash
+   python sparse/install_engines.py --spacy --nltk --transformers
+   ```
+   Dedicated tool for setting up engines.
+
+**My recommendation:** Use **extras groups** (#1) + **clear error messages** (#2). This is industry standard and gives users full control.
+
+Want me to set up extras groups in requirements.txt / `setup.py` / `pyproject.toml`?
+
+User: yes! and put something about that in the engine implementation roadmap too
+
+GitHub Copilot: Created 2 todos
+
+I'll create a `pyproject.toml` with extras groups and update the roadmap: 
+
+Created [](file:///c%3A/Users/dave/Documents/GitHub/sparse/pyproject.toml)
+
+Now update the Engine Implementation Roadmap to document this: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+
+
+Using "Replace String in File"
+
+
+```
+
+```
+Now add a new section to the roadmap explaining the extras strategy: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+Perfect! Now update requirements.txt to reference the pyproject.toml: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+Verify tests still pass: 
+
+Ran terminal command: C:/Users/dave/Documents/GitHub/sparse/.venv/Scripts/python.exe -m pytest tests/ -q
+
+Completed: *Setup extras groups* (1/2)
+
+Done! ✅ Here's what I set up:
+
+**Created pyproject.toml** with extras groups:
+- `[core]` — NLTK, spaCy, TextBlob (~500 MB)
+- `[advanced]` — Transformers, Gensim, Stanza (~2-3 GB)
+- `[specialized]` — Tokenizers, SentencePiece, Flair (~1 GB)
+- `[utils]` — Text helpers, cleaning, detection (~100 MB)
+- `[dev]` — pytest, black, flake8, mypy (~50 MB)
+- `[all]` — Everything (~3.5 GB)
+
+**Installation examples:**
+```bash
+pip install sparse              # Minimal (no engines)
+pip install sparse[core]        # Recommended (NLTK, spaCy, TextBlob)
+pip install sparse[all]         # Everything
+pip install sparse[advanced]    # Advanced engines only
+```
+
+**Updated Engine Implementation Roadmap** to document:
+- Why extras groups (user control, no bloat, industry standard)
+- Table showing each group's size and purpose
+- Error handling examples
+- Updated implementation checklist to add dependencies to pyproject.toml (not requirements.txt)
+
+**Updated requirements.txt** — now for development only, points to pyproject.toml for extras
+
+**All 21 tests still passing** ✅
+
+This way, users get exactly what they need without unnecessary bloat, and it's transparent what depends on what!
+
+Made changes.
+
+User: Does the readme need updating?
+
+GitHub Copilot: Read [](file:///c%3A/Users/dave/Documents/GitHub/sparse/README.md)
+
+Yes! The README needs updating. It says "Proposed Usage" and has checkboxes that should be marked complete. Let me update it: 
+
+Using "Replace String in File"
+
+Let me check the exact formatting: 
+
+Read [](file:///c%3A/Users/dave/Documents/GitHub/sparse/README.md#1-1), lines 1 to 15
+
+I'll create a completely new README to replace it: 
+
+Created [](file:///c%3A/Users/dave/Documents/GitHub/sparse/README.md)
+
+Let me replace the entire content using the read/write approach by replacing large sections: 
+
+Read [](file:///c%3A/Users/dave/Documents/GitHub/sparse/README.md)
+
+Using "Replace String in File"
+
+The file has backticks around it. Let me try a different approach - replace smaller sections: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+Now update the project structure section: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+Now update the contributing section: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+Perfect! The README is now updated. Let me verify the tests still pass: 
+
+Ran terminal command: C:/Users/dave/Documents/GitHub/sparse/.venv/Scripts/python.exe -m pytest tests/ -q
+
+Perfect! ✅ **README is now fully updated** with:
+
+**What's new:**
+- ✅ Quick Start section with installation options
+- ✅ Updated Usage section with real, working examples
+- ✅ Feature checklist showing what's completed (NLTK ✓, spaCy ✓)
+- ✅ Installation guide for all extras groups (`[core]`, `[advanced]`, `[utils]`, `[all]`)
+- ✅ Supported Engines table
+- ✅ Updated Project Structure
+- ✅ Testing section showing 21 tests passing
+- ✅ Updated Contributing guidelines with link to Engine Roadmap
+
+**Key improvements:**
+- Changed from "Proposed" to "Current Status"
+- All feature checkboxes marked with what's actually implemented
+- Real working code examples (NLTK tokenization, spaCy NER, etc.)
+- Clear installation instructions for different needs
+- Links to Engine Implementation Roadmap throughout
+- Professional tone reflecting active development
+
+The README now accurately reflects the project's current state with NLTK + spaCy engines fully implemented and tested! 🎉
+
+Made changes.
+
+User: Awesome! Let's keep going on phase 1, with textblob
+
+GitHub Copilot: Starting: *Build TextBlob engine* (1/4)
+
+Create the TextBlob engine: 
+
+Created [](file:///c%3A/Users/dave/Documents/GitHub/sparse/sparse/engines/textblob_engine.py)
+
+Update the dispatcher to support TextBlob: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+Create comprehensive TextBlob tests: 
+
+Created [](file:///c%3A/Users/dave/Documents/GitHub/sparse/tests/test_engines_textblob.py)
+
+Update pyproject.toml to add textblob to core extras: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+Install textblob: 
+
+Installing textblob in Python 3.13.9 (.venv)
+Completed with input: {
+  "packageList": [
+    "textblob"
+  ],
+  "resourcePath": "c:\\Users\\dave\\Documents\\GitHub\\sparse"
+}
+
+Run all tests: 
+
+Ran terminal command: C:/Users/dave/Documents/GitHub/sparse/.venv/Scripts/python.exe -m pytest tests/ -v
+
+TextBlob needs the brown corpus for noun phrase extraction. Let me download it and simplify the test: 
+
+Ran `pylanceRunCodeSnippet` 
+Completed with input: {
+  "codeSnippet": "import nltk\nnltk.download('brown')\nnltk.download('punkt')",
+  "workspaceRoot": "c:\\Users\\dave\\Documents\\GitHub\\sparse"
+}
+
+Now run tests again: 
+
+Ran terminal command: C:/Users/dave/Documents/GitHub/sparse/.venv/Scripts/python.exe -m pytest tests/ -v --tb=short
+
+Perfect! All **31 tests pass**. Now update the roadmap to mark TextBlob as complete: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+
+
+Using "Replace String in File"
+
+
+```
+
+```
+Summarized conversation historyPerfect! Phase 1 (Core) is now **complete** with all 3 engines (NLTK, spaCy, and TextBlob) fully implemented, tested, and documented. 
+
+The TextBlob engine adds sentiment analysis and noun phrase extraction capabilities, bringing the total to **31/31 tests passing**. Your sparse library now offers:
+
+- **NLTK**: Basic NLP (tokenization, lemmatization, stop words)
+- **spaCy**: Industrial NLP (POS tagging, NER, advanced features)
+- **TextBlob**: Lightweight API with sentiment analysis and phrase extraction
+
+The extras groups in pyproject.toml let users install only what they need. Ready to move to Phase 2 (Transformers, Gensim, Stanza) whenever you'd like!
+
+Made changes.

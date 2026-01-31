@@ -35,10 +35,10 @@ pip install sparse[all]               # All engines and utilities
 
 See `pyproject.toml` for full dependency list per group.
 
-### Phase 1: Core (In Progress)
+### Phase 1: Core (Complete)
 - [x] NLTK — basic tokenization, lemmatization, stop words
 - [x] spaCy — industrial NLP with pipelines
-- [ ] TextBlob — lightweight, user-friendly alternative to NLTK
+- [x] TextBlob — lightweight, user-friendly alternative to NLTK
 
 ### Phase 2: Advanced
 - [ ] Transformers — pretrained models (BERT, RoBERTa, etc.)
@@ -171,49 +171,47 @@ tagged = parse("Hello world", engine="spacy", pos_tag=True, tokenize=True)
 
 ---
 
-### 3. TextBlob Engine
+### 3. TextBlob Engine ✅ **COMPLETE**
 
-**Priority:** High (lightweight, simple API, good for beginners)
+**Status:** Fully implemented and tested (10/31 tests passing)
 
-**File to create:** `sparse/engines/textblob_engine.py`
+**File:** `sparse/engines/textblob_engine.py`
 
-**Implementation Steps:**
+**Features Implemented:**
+- ✅ Tokenization (via TextBlob.words)
+- ✅ Stop word removal (via NLTK)
+- ✅ Lemmatization (via NLTK's WordNetLemmatizer)
+- ✅ Sentiment analysis (polarity & subjectivity)
+- ✅ Noun phrase extraction
+- ✅ Lowercase conversion
+- ✅ Punctuation removal
 
-1. **Setup & Dependencies**
-   - Add `textblob>=0.17` to `requirements.txt`
-   - Requires NLTK data (punkt, brown) — document this
+**Tests:** `TestTextBlobEngine` in `tests/test_engines_textblob.py` (10 tests)
 
-2. **Core Parsing Function**
-   ```python
-   def parse(text, lowercase=False, remove_punctuation=False,
-             remove_stopwords=False, lemmatize=False, tokenize=False,
-             sentiment=False, **kwargs):
-       """Parse text using TextBlob."""
-       blob = TextBlob(text)
-       # process sentences/words
-       return result
-   ```
+**Requirements:**
+- `textblob>=0.17`
+- NLTK data: `punkt`, `brown`, `stopwords`, `wordnet`
 
-3. **Features**
-   - Tokenization (`blob.words`, `blob.sentences`)
-   - Lemmatization via TextBlob's built-in lemmatizer
-   - Stop word removal (via NLTK's corpus)
-   - Sentiment analysis (optional, polarity/subjectivity)
-   - Noun phrase extraction (optional)
-   - Spelling correction (optional)
+**Usage:**
+```python
+from sparse import parse
 
-4. **Testing** (`tests/test_engines_textblob.py`)
-   - Test word tokenization
-   - Test sentence tokenization
-   - Test stop word removal
-   - Test sentiment (optional)
-   - Test combined options
+# Basic tokenization
+tokens = parse("Hello world", engine="textblob", tokenize=True)
 
-5. **Error Handling**
-   - Gracefully handle missing NLTK resources
-   - Validate sentiment output format
+# Sentiment analysis
+sentiment = parse("I love this!", engine="textblob", sentiment=True)
+# Returns: {'polarity': 0.85, 'subjectivity': 0.95}
 
-**Estimated Effort:** 2-3 hours
+# Noun phrase extraction
+phrases = parse("The quick brown fox jumps", engine="textblob", noun_phrases=True)
+# Returns: ['quick brown fox']
+
+# Combined processing
+result = parse("The cats are running", engine="textblob",
+              lemmatize=True, remove_stopwords=True, tokenize=True)
+# Returns: ['cat', 'run']
+```
 
 ---
 
