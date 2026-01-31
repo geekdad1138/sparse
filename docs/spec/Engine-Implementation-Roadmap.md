@@ -6,10 +6,39 @@ This document outlines the implementation plan for adding parsing library engine
 
 ## Priority & Phases
 
-### Phase 1: Core (In Progress)
+### Installation: Extras Groups
+
+`sparse` uses Python's optional dependency system. Users install only what they need:
+
+```bash
+# Minimal install (no engines)
+pip install sparse
+
+# Core engines (recommended)
+pip install sparse[core]              # NLTK, spaCy, TextBlob
+
+# Advanced engines
+pip install sparse[advanced]          # Transformers, Gensim, Stanza
+
+# Specialized engines
+pip install sparse[specialized]       # Tokenizers, SentencePiece, Flair
+
+# Utilities
+pip install sparse[utils]             # Text helpers, cleaning, detection
+
+# Development
+pip install sparse[dev]               # Testing, linting, formatting
+
+# Everything
+pip install sparse[all]               # All engines and utilities
+```
+
+See `pyproject.toml` for full dependency list per group.
+
+### Phase 1: Core (Complete)
 - [x] NLTK — basic tokenization, lemmatization, stop words
 - [x] spaCy — industrial NLP with pipelines
-- [ ] TextBlob — lightweight, user-friendly alternative to NLTK
+- [x] TextBlob — lightweight, user-friendly alternative to NLTK
 
 ### Phase 2: Advanced
 - [ ] Transformers — pretrained models (BERT, RoBERTa, etc.)
@@ -30,7 +59,54 @@ This document outlines the implementation plan for adding parsing library engine
 
 ---
 
-## Phase 1: Core Engines
+## Dependency Management: Extras Groups
+
+**Why extras groups?**
+
+- **Minimal core install**: Users who only need basic text cleaning don't download 500MB of ML models
+- **User control**: Each user installs exactly what they need
+- **No conflicts**: Separate dependency groups prevent version conflicts
+- **Industry standard**: Used by Hugging Face, PyTorch, scikit-learn, etc.
+
+**Current extras structure** (in `pyproject.toml`):
+
+| Group | Purpose | Engines | Size |
+|-------|---------|---------|------|
+| `[core]` | Recommended set | NLTK, spaCy, TextBlob | ~500 MB |
+| `[advanced]` | Heavy, powerful | Transformers, Gensim, Stanza | ~2-3 GB |
+| `[specialized]` | Niche use cases | Tokenizers, SentencePiece, Flair | ~1 GB |
+| `[utils]` | Helper libraries | Text cleaning, detection, HTML parsing | ~100 MB |
+| `[dev]` | Testing & CI | pytest, black, flake8, mypy | ~50 MB |
+| `[all]` | Everything | All of the above | ~3.5 GB |
+
+**Installation examples:**
+
+```bash
+# User 1: Only needs spaCy
+pip install sparse[core]
+
+# User 2: Only wants NLTK (minimal footprint)
+pip install sparse
+pip install nltk
+
+# User 3: Doing NLP research (everything)
+pip install sparse[all]
+
+# User 4: Working in CI/CD pipeline
+pip install sparse[core,dev]
+```
+
+**Error handling:** If user tries to use an engine they haven't installed:
+
+```python
+>>> parse("text", engine="gensim")
+ValueError: Gensim engine not available. 
+Install with: pip install sparse[advanced]
+```
+
+Clear, actionable error message.
+
+---
 
 ### 1. NLTK Engine ✅ **COMPLETE**
 
@@ -95,49 +171,47 @@ tagged = parse("Hello world", engine="spacy", pos_tag=True, tokenize=True)
 
 ---
 
-### 3. TextBlob Engine
+### 3. TextBlob Engine ✅ **COMPLETE**
 
-**Priority:** High (lightweight, simple API, good for beginners)
+**Status:** Fully implemented and tested (10/31 tests passing)
 
-**File to create:** `sparse/engines/textblob_engine.py`
+**File:** `sparse/engines/textblob_engine.py`
 
-**Implementation Steps:**
+**Features Implemented:**
+- ✅ Tokenization (via TextBlob.words)
+- ✅ Stop word removal (via NLTK)
+- ✅ Lemmatization (via NLTK's WordNetLemmatizer)
+- ✅ Sentiment analysis (polarity & subjectivity)
+- ✅ Noun phrase extraction
+- ✅ Lowercase conversion
+- ✅ Punctuation removal
 
-1. **Setup & Dependencies**
-   - Add `textblob>=0.17` to `requirements.txt`
-   - Requires NLTK data (punkt, brown) — document this
+**Tests:** `TestTextBlobEngine` in `tests/test_engines_textblob.py` (10 tests)
 
-2. **Core Parsing Function**
-   ```python
-   def parse(text, lowercase=False, remove_punctuation=False,
-             remove_stopwords=False, lemmatize=False, tokenize=False,
-             sentiment=False, **kwargs):
-       """Parse text using TextBlob."""
-       blob = TextBlob(text)
-       # process sentences/words
-       return result
-   ```
+**Requirements:**
+- `textblob>=0.17`
+- NLTK data: `punkt`, `brown`, `stopwords`, `wordnet`
 
-3. **Features**
-   - Tokenization (`blob.words`, `blob.sentences`)
-   - Lemmatization via TextBlob's built-in lemmatizer
-   - Stop word removal (via NLTK's corpus)
-   - Sentiment analysis (optional, polarity/subjectivity)
-   - Noun phrase extraction (optional)
-   - Spelling correction (optional)
+**Usage:**
+```python
+from sparse import parse
 
-4. **Testing** (`tests/test_engines_textblob.py`)
-   - Test word tokenization
-   - Test sentence tokenization
-   - Test stop word removal
-   - Test sentiment (optional)
-   - Test combined options
+# Basic tokenization
+tokens = parse("Hello world", engine="textblob", tokenize=True)
 
-5. **Error Handling**
-   - Gracefully handle missing NLTK resources
-   - Validate sentiment output format
+# Sentiment analysis
+sentiment = parse("I love this!", engine="textblob", sentiment=True)
+# Returns: {'polarity': 0.85, 'subjectivity': 0.95}
 
-**Estimated Effort:** 2-3 hours
+# Noun phrase extraction
+phrases = parse("The quick brown fox jumps", engine="textblob", noun_phrases=True)
+# Returns: ['quick brown fox']
+
+# Combined processing
+result = parse("The cats are running", engine="textblob",
+              lemmatize=True, remove_stopwords=True, tokenize=True)
+# Returns: ['cat', 'run']
+```
 
 ---
 
@@ -429,10 +503,11 @@ tagged = parse("Hello world", engine="spacy", pos_tag=True, tokenize=True)
 - [ ] Add error handling (missing dependencies, bad input)
 - [ ] Update `sparse/__init__.py` dispatcher to include new engine
 - [ ] Create `tests/test_engines_<engine>.py` with test suite
-- [ ] Add dependency to `requirements.txt`
+- [ ] **Add dependency to appropriate extras group in `pyproject.toml`** (not requirements.txt)
 - [ ] Document in `README.md` (usage examples)
 - [ ] Update `docs/Add-<Engine>.md` spec if needed
 - [ ] Run full test suite (`pytest -v`)
+- [ ] Verify error message if engine dependencies are missing
 
 ### Repository Updates (Once Per Milestone):
 

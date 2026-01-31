@@ -11,53 +11,95 @@ Preprocessing text is often the most tedious part of NLP. You find yourself impo
 
 **Sparse** simplifies this into a single, intuitive function call. It acts as a wrapper that lets you toggle features like lemmatization, stop-word removal, and casing without worrying about the underlying library's specific syntax.
 
-## 🛠️ Proposed Usage
-The goal is a "Batteries Included" API. Here is how `sparse` is designed to look:
+## 🛠️ Current Status & Usage
+
+The core API is now implemented and tested! Here's how to use `sparse`:
 
 ```python
-import sparse
+from sparse import parse
 
-raw_text = "The quick brown fox, jumps over the lazy dog!"
-
-# 1. Simple, fast cleaning (no heavy dependencies)
-clean = sparse.parse(raw_text, lowercase=True, remove_punctuation=True)
+# 1. Simple, fast cleaning (no dependencies required)
+text = "The quick brown fox, jumps over the lazy dog!"
+clean = parse(text, lowercase=True, remove_punctuation=True)
 # Output: "the quick brown fox jumps over the lazy dog"
 
-# 2. Advanced NLP (leveraging engines like spaCy or NLTK)
-tokens = sparse.parse(
-    raw_text, 
-    engine="spacy", 
-    remove_stopwords=True, 
-    lemmatize=True
-)
+# 2. Advanced NLP with engines
+tokens = parse(text, engine="spacy", remove_stopwords=True, lemmatize=True, tokenize=True)
+# Output: ['quick', 'brown', 'fox', 'jump', 'lazy', 'dog']
 
+# 3. Named Entity Recognition (spaCy)
+entities = parse("Apple is in Cupertino", engine="spacy", ner=True)
+# Output: [{'text': 'Apple', 'label': 'ORG', ...}, ...]
 ```
 
-## ✨ Key Features (Roadmap)
+## Installation
 
-* [ ] **Unified API:** One function (`parse`) to rule them all.
-* [ ] **Multi-Engine Support:** Seamlessly switch between `NLTK`, `spaCy`, and `TextBlob`.
-* [ ] **Noise Reduction:** One-flag removal for URLs, HTML tags, emojis, and punctuation.
-* [ ] **Smart Normalization:** Intelligent handling of casing, lemmatization, and stemming.
-* [ ] **Extensible:** Easily register your own custom parsing logic into the pipeline.
+```bash
+# Minimal (no engines)
+pip install sparse
+
+# Recommended (NLTK + spaCy + TextBlob)
+pip install sparse[core]
+
+# All engines and utilities
+pip install sparse[all]
+```
+
+## ✨ Features
+
+* [x] **Unified API:** One function (`parse`) to rule them all
+* [x] **Lightweight Default:** No external dependencies required
+* [x] **NLTK Engine:** Tokenization, lemmatization, stop-word removal
+* [x] **spaCy Engine:** Fast NLP, POS tagging, Named Entity Recognition
+* [ ] **TextBlob Engine:** Coming soon
+* [ ] **Utilities:** Text cleaning, language detection, HTML parsing
+
+## Supported Engines
+
+| Engine | Install | Features |
+|--------|---------|----------|
+| Default | `pip install sparse` | lowercase, remove_punctuation |
+| NLTK | `pip install sparse[core]` | tokenize, lemmatize, remove_stopwords |
+| spaCy | `pip install sparse[core]` | tokenize, lemmatize, remove_stopwords, POS, NER |
+
+See [Engine Implementation Roadmap](docs/spec/Engine-Implementation-Roadmap.md) for planned engines.
 
 ## 📂 Project Structure
 
 ```text
 sparse/
-├── sparse/             # Main package logic
-│   ├── __init__.py     # The sparse.parse() entry point
-│   ├── engines/        # Adapters for NLTK, spaCy, etc.
-│   └── utils.py        # Regex-based cleaning utilities
-├── tests/              # Unit tests
-├── requirements.txt    # Project dependencies
+├── sparse/
+│   ├── __init__.py           # Main parse() function & dispatcher
+│   ├── utils.py              # Lightweight regex utilities
+│   └── engines/              # Engine adapters
+│       ├── nltk_engine.py
+│       └── spacy_engine.py
+├── tests/
+│   ├── test_sparse.py        # Core & utility tests
+│   └── test_engines_spacy.py # spaCy-specific tests
+├── docs/spec/
+│   └── Engine-Implementation-Roadmap.md
+├── pyproject.toml            # Dependencies & extras groups
+├── requirements.txt          # Development requirements
 └── README.md
+```
 
+## Testing
+
+```bash
+pytest tests/ -v
+# 21 tests passing (core, utilities, NLTK, spaCy)
 ```
 
 ## 🤝 Contributing
 
-This project is in its early stages! If you have ideas for the API design or want to help build the first set of engines, feel free to open an issue or submit a PR.
+This project is in active development! Contributions are welcome:
+
+- **Engine implementations:** See [roadmap](docs/spec/Engine-Implementation-Roadmap.md) for next engines to build
+- **Bug reports & features:** Open an issue
+- **Documentation:** PRs with examples and clarifications welcome
+
+Check the [Engine Implementation Roadmap](docs/spec/Engine-Implementation-Roadmap.md) for development priorities.
 
 ## ⚖️ License
 
