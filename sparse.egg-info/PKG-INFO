@@ -1,0 +1,154 @@
+Metadata-Version: 2.4
+Name: sparse
+Version: 0.1.0
+Summary: The 'Smart' Parse Function for Python. Unified interface for text preprocessing across multiple NLP libraries.
+Author-email: sparse contributors <sparse@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/yourusername/sparse
+Project-URL: Documentation, https://github.com/yourusername/sparse#readme
+Project-URL: Repository, https://github.com/yourusername/sparse.git
+Project-URL: Issues, https://github.com/yourusername/sparse/issues
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Provides-Extra: core
+Requires-Dist: nltk>=3.8; extra == "core"
+Requires-Dist: spacy>=3.0; extra == "core"
+Requires-Dist: textblob>=0.17; extra == "core"
+Provides-Extra: advanced
+Requires-Dist: nltk>=3.8; extra == "advanced"
+Requires-Dist: transformers>=4.30; extra == "advanced"
+Requires-Dist: torch>=2.0; extra == "advanced"
+Requires-Dist: gensim>=4.0; extra == "advanced"
+Requires-Dist: stanza>=1.5; extra == "advanced"
+Provides-Extra: specialized
+Requires-Dist: tokenizers>=0.13; extra == "specialized"
+Requires-Dist: sentencepiece>=0.1.99; extra == "specialized"
+Requires-Dist: flair>=0.11; extra == "specialized"
+Provides-Extra: utils
+Requires-Dist: ftfy>=6.0; extra == "utils"
+Requires-Dist: Unidecode>=1.3; extra == "utils"
+Requires-Dist: regex>=2022.0; extra == "utils"
+Requires-Dist: emoji>=2.0; extra == "utils"
+Requires-Dist: langdetect>=1.0; extra == "utils"
+Requires-Dist: beautifulsoup4>=4.9; extra == "utils"
+Requires-Dist: lxml>=4.6; extra == "utils"
+Requires-Dist: bleach>=5.0; extra == "utils"
+Requires-Dist: scikit-learn>=1.0; extra == "utils"
+Requires-Dist: textacy>=0.11; extra == "utils"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0; extra == "dev"
+Requires-Dist: black>=22.0; extra == "dev"
+Requires-Dist: flake8>=4.0; extra == "dev"
+Requires-Dist: mypy>=0.900; extra == "dev"
+Provides-Extra: all
+Requires-Dist: sparse[advanced,core,dev,specialized,utils]; extra == "all"
+Dynamic: license-file
+
+# Sparse 🧠
+
+**The "Smart" Parse Function for Python.**
+
+`sparse` is a lightweight, extensible library designed to bridge the gap between raw text and clean data. Instead of writing repetitive boilerplate for every NLP project, `sparse` provides a unified interface to clean, tokenize, and normalize text using the industry's best engines.
+
+---
+
+## 🚀 The Vision
+Preprocessing text is often the most tedious part of NLP. You find yourself importing `re`, `string`, `nltk`, and `spacy` just to get a sentence ready for a model. 
+
+**Sparse** simplifies this into a single, intuitive function call. It acts as a wrapper that lets you toggle features like lemmatization, stop-word removal, and casing without worrying about the underlying library's specific syntax.
+
+## 🛠️ Current Status & Usage
+
+The core API is now implemented and tested! Here's how to use `sparse`:
+
+```python
+from sparse import parse
+
+# 1. Simple, fast cleaning (no dependencies required)
+text = "The quick brown fox, jumps over the lazy dog!"
+clean = parse(text, lowercase=True, remove_punctuation=True)
+# Output: "the quick brown fox jumps over the lazy dog"
+
+# 2. Advanced NLP with engines
+tokens = parse(text, engine="spacy", remove_stopwords=True, lemmatize=True, tokenize=True)
+# Output: ['quick', 'brown', 'fox', 'jump', 'lazy', 'dog']
+
+# 3. Named Entity Recognition (spaCy)
+entities = parse("Apple is in Cupertino", engine="spacy", ner=True)
+# Output: [{'text': 'Apple', 'label': 'ORG', ...}, ...]
+```
+
+## Installation
+
+```bash
+# Minimal (no engines)
+pip install sparse
+
+# Recommended (NLTK + spaCy + TextBlob)
+pip install sparse[core]
+
+# All engines and utilities
+pip install sparse[all]
+```
+
+## ✨ Features
+
+* [x] **Unified API:** One function (`parse`) to rule them all
+* [x] **Lightweight Default:** No external dependencies required
+* [x] **NLTK Engine:** Tokenization, lemmatization, stop-word removal
+* [x] **spaCy Engine:** Fast NLP, POS tagging, Named Entity Recognition
+* [ ] **TextBlob Engine:** Coming soon
+* [ ] **Utilities:** Text cleaning, language detection, HTML parsing
+
+## Supported Engines
+
+| Engine | Install | Features |
+|--------|---------|----------|
+| Default | `pip install sparse` | lowercase, remove_punctuation |
+| NLTK | `pip install sparse[core]` | tokenize, lemmatize, remove_stopwords |
+| spaCy | `pip install sparse[core]` | tokenize, lemmatize, remove_stopwords, POS, NER |
+
+See [Engine Implementation Roadmap](docs/spec/Engine-Implementation-Roadmap.md) for planned engines.
+
+## 📂 Project Structure
+
+```text
+sparse/
+├── sparse/
+│   ├── __init__.py           # Main parse() function & dispatcher
+│   ├── utils.py              # Lightweight regex utilities
+│   └── engines/              # Engine adapters
+│       ├── nltk_engine.py
+│       └── spacy_engine.py
+├── tests/
+│   ├── test_sparse.py        # Core & utility tests
+│   └── test_engines_spacy.py # spaCy-specific tests
+├── docs/spec/
+│   └── Engine-Implementation-Roadmap.md
+├── pyproject.toml            # Dependencies & extras groups
+├── requirements.txt          # Development requirements
+└── README.md
+```
+
+## Testing
+
+```bash
+pytest tests/ -v
+# 21 tests passing (core, utilities, NLTK, spaCy)
+```
+
+## 🤝 Contributing
+
+This project is in active development! Contributions are welcome:
+
+- **Engine implementations:** See [roadmap](docs/spec/Engine-Implementation-Roadmap.md) for next engines to build
+- **Bug reports & features:** Open an issue
+- **Documentation:** PRs with examples and clarifications welcome
+
+Check the [Engine Implementation Roadmap](docs/spec/Engine-Implementation-Roadmap.md) for development priorities.
+
+## ⚖️ License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
