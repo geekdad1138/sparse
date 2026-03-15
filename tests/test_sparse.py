@@ -63,7 +63,14 @@ class TestSparse(unittest.TestCase):
 
 class TestNLTKEngine(unittest.TestCase):
     """Test suite for NLTK engine."""
-    
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            import nltk  # noqa: F401
+        except ImportError:
+            raise unittest.SkipTest("NLTK not installed")
+
     def test_nltk_tokenize(self):
         """Test NLTK tokenization."""
         result = parse("Hello world", engine="nltk", tokenize=True)

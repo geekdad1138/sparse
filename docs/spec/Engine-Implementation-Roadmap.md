@@ -41,9 +41,9 @@ See `pyproject.toml` for full dependency list per group.
 - [x] TextBlob — lightweight, user-friendly alternative to NLTK
 
 ### Phase 2: Advanced
-- [ ] Transformers — pretrained models (BERT, RoBERTa, etc.)
-- [ ] Gensim — embeddings and topic modeling
-- [ ] Stanza — multilingual NLP
+- [x] Transformers — pretrained models (BERT, RoBERTa, etc.)
+- [x] Gensim — embeddings and topic modeling
+- [x] Stanza — multilingual NLP
 
 ### Phase 3: Specialized
 - [ ] Tokenizers (Hugging Face) — subword tokenization

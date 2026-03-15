@@ -9,7 +9,7 @@ description = "The 'Smart' Parse Function for Python. Unified interface for text
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "sparse contributors", email = ""}
+    {name = "sparse contributors", email = "sparse@example.com"}
 ]
 requires-python = ">=3.8"
 dependencies = []
@@ -24,6 +24,7 @@ core = [
 
 # Advanced engines (powerful, heavy)
 advanced = [
+    "nltk>=3.8",
     "transformers>=4.30",
     "torch>=2.0",
     "gensim>=4.0",

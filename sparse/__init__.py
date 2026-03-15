@@ -102,5 +102,30 @@ def _dispatch_engine(engine_name, text, options):
             raise ValueError(
                 'Stanza engine not available. Install with: pip install sparse[advanced]'
             )
+    elif engine_name == 'hf_tokenizers':
+        try:
+            from sparse.engines import hf_tokenizers_engine
+            return hf_tokenizers_engine.parse(text, **engine_options)
+        except ImportError:
+            raise ValueError(
+                'Hugging Face Tokenizers engine not available. '
+                'Install with: pip install sparse[specialized]'
+            )
+    elif engine_name == 'sentencepiece':
+        try:
+            from sparse.engines import sentencepiece_engine
+            return sentencepiece_engine.parse(text, **engine_options)
+        except ImportError:
+            raise ValueError(
+                'SentencePiece engine not available. Install with: pip install sparse[specialized]'
+            )
+    elif engine_name == 'flair':
+        try:
+            from sparse.engines import flair_engine
+            return flair_engine.parse(text, **engine_options)
+        except ImportError:
+            raise ValueError(
+                'Flair engine not available. Install with: pip install sparse[specialized]'
+            )
     else:
         raise ValueError(f'Unknown engine: {engine_name}')

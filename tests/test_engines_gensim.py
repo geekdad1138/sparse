@@ -23,7 +23,12 @@ class TestGensimEngine(unittest.TestCase):
         self.assertIn("quick", result)
 
     def test_gensim_lemmatize(self):
-        # this test will only work if nltk wordnet data is available
+        # Only run this test if NLTK is installed (required for lemmatization)
+        try:
+            import nltk  # noqa: F401
+        except ImportError:
+            raise unittest.SkipTest("NLTK not installed")
+
         result = parse("cats dogs running", engine="gensim", tokenize=True, lemmatize=True)
         self.assertIn("cat", result)
         self.assertIn("dog", result)

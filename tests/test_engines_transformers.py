@@ -18,8 +18,8 @@ class TestTransformersEngine(unittest.TestCase):
         result = parse("Hello world", engine="transformers", tokenize=True)
         self.assertIsInstance(result, list)
         self.assertGreaterEqual(len(result), 1)
-        # tokens should include word pieces or words
-        self.assertIn("Hello", result[0])
+        # bert-base-uncased lowercases input
+        self.assertEqual(result[0], "hello")
 
     def test_transformers_return_ids(self):
         tokens = parse("Hello world", engine="transformers", tokenize=True)
@@ -31,7 +31,7 @@ class TestTransformersEngine(unittest.TestCase):
     def test_transformers_joined(self):
         joined = parse("Hello world", engine="transformers", tokenize=False)
         self.assertIsInstance(joined, str)
-        self.assertIn("Hello", joined)
+        self.assertEqual(joined, "hello world")
 
     def test_unknown_model_raises(self):
         with self.assertRaises(RuntimeError):
