@@ -1,7 +1,10 @@
 from sparse import utils
 
 def parse(text, engine=None, lowercase=False, remove_punctuation=False, 
-          remove_stopwords=False, lemmatize=False, tokenize=False, **kwargs):
+          remove_stopwords=False, lemmatize=False, tokenize=False,
+          fix_text=False, transliterate=False, remove_emoji=False, remove_unicode=False,
+          clean_html=False, extract_text=False, remove_urls=False,
+          detect_language=False, language_engine='langdetect', **kwargs):
     """
     Parse and preprocess text with optional engine support.
     
@@ -13,6 +16,15 @@ def parse(text, engine=None, lowercase=False, remove_punctuation=False,
         remove_stopwords (bool): Remove stop words (engine-dependent).
         lemmatize (bool): Apply lemmatization (engine-dependent).
         tokenize (bool): Return tokens instead of joined string (engine-dependent).
+        fix_text (bool): Apply encoding fixes (ftfy).
+        transliterate (bool): Convert Unicode to ASCII (Unidecode).
+        remove_emoji (bool): Drop emoji characters.
+        remove_unicode (bool): Strip non-ASCII characters.
+        clean_html (bool): Clean HTML content.
+        extract_text (bool): Extract text from HTML.
+        remove_urls (bool): Remove URLs from text.
+        detect_language (bool): If True, return detected language code.
+        language_engine (str): Language detection engine ('langdetect', 'fasttext').
         **kwargs: Additional engine-specific options (e.g., pos_tag, ner, model for spacy).
     
     Returns:
@@ -24,11 +36,31 @@ def parse(text, engine=None, lowercase=False, remove_punctuation=False,
     
     # Lightweight (default) pipeline: utils-based
     result = text
+
+    if clean_html:
+        result = utils.clean_html(result)
+    if extract_text:
+        result = utils.extract_text(result)
+    if remove_urls:
+        result = utils.remove_urls(result)
+
+    if fix_text:
+        result = utils.fix_text(result)
+    if transliterate:
+        result = utils.transliterate(result)
+    if remove_emoji:
+        result = utils.remove_emoji(result)
+    if remove_unicode:
+        result = utils.remove_unicode(result)
+
     if lowercase:
         result = utils.lowercase(result)
     if remove_punctuation:
         result = utils.remove_punctuation(result)
-    
+
+    if detect_language:
+        return utils.detect_language(result, engine=language_engine)
+
     return result
 
 
@@ -126,6 +158,14 @@ def _dispatch_engine(engine_name, text, options):
         except ImportError:
             raise ValueError(
                 'Flair engine not available. Install with: pip install sparse[specialized]'
+            )
+    elif engine_name == 'sklearn':
+        try:
+            from sparse.engines import sklearn_engine
+            return sklearn_engine.parse(text, **engine_options)
+        except ImportError:
+            raise ValueError(
+                'scikit-learn engine not available. Install with: pip install sparse[utils]'
             )
     else:
         raise ValueError(f'Unknown engine: {engine_name}')
