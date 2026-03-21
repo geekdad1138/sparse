@@ -167,5 +167,13 @@ def _dispatch_engine(engine_name, text, options):
             raise ValueError(
                 'scikit-learn engine not available. Install with: pip install sparse[utils]'
             )
+    elif engine_name == 'textacy':
+        try:
+            from sparse.engines import textacy_engine
+            return textacy_engine.parse(text, **engine_options)
+        except ImportError:
+            raise ValueError(
+                'Textacy engine not available. Install with: pip install sparse[utils]'
+            )
     else:
         raise ValueError(f'Unknown engine: {engine_name}')

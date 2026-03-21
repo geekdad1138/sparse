@@ -55,7 +55,7 @@ See `pyproject.toml` for full dependency list per group.
 - [x] Language detection (langdetect, fasttext)
 - [x] HTML cleaning (BeautifulSoup, lxml, bleach)
 - [x] Feature extraction (scikit-learn)
-- [ ] Higher-level utilities (textacy)
+- [x] Higher-level utilities (textacy)
 
 ---
 
