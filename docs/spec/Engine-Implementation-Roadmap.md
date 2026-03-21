@@ -46,16 +46,16 @@ See `pyproject.toml` for full dependency list per group.
 - [x] Stanza — multilingual NLP
 
 ### Phase 3: Specialized
-- [ ] Tokenizers (Hugging Face) — subword tokenization
-- [ ] SentencePiece — subword modeling
-- [ ] Flair — contextual embeddings
+- [x] Tokenizers (Hugging Face) — subword tokenization
+- [x] SentencePiece — subword modeling
+- [x] Flair — contextual embeddings
 
 ### Phase 4: Utilities
-- [ ] Text normalization helpers (ftfy, Unidecode, regex, emoji)
-- [ ] Language detection (langdetect, fasttext)
-- [ ] HTML cleaning (BeautifulSoup, lxml, bleach)
-- [ ] Feature extraction (scikit-learn)
-- [ ] Higher-level utilities (textacy)
+- [x] Text normalization helpers (ftfy, Unidecode, regex, emoji)
+- [x] Language detection (langdetect, fasttext)
+- [x] HTML cleaning (BeautifulSoup, lxml, bleach)
+- [x] Feature extraction (scikit-learn)
+- [x] Higher-level utilities (textacy)
 
 ---
 
